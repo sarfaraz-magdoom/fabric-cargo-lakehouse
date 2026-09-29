@@ -1,0 +1,133 @@
+{
+    "name": "pl_cargo_ops_pipeline",
+    "objectId": "9880c313-6427-4d20-afe7-4543882359a8",
+    "properties": {
+        "activities": [
+            {
+                "name": "Ingest Bronze",
+                "type": "TridentNotebook",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "typeProperties": {
+                    "notebookId": "54272ab2-4e0c-4702-9240-06c42303a909",
+                    "workspaceId": "8a0ad676-453e-4aae-bf78-9c1fdca19d2b",
+                    "parameters": {
+                        "batch_size": {
+                            "value": "3",
+                            "type": "int"
+                        },
+                        "years_to_load": {
+                            "value": "2015,2016,2017",
+                            "type": "string"
+                        },
+                        "reset_state": {
+                            "value": false,
+                            "type": "bool"
+                        }
+                    },
+                    "sparkProperties": {
+                        "undefined": {
+                            "value": ""
+                        }
+                    }
+                }
+            },
+            {
+                "name": "Bronze to Silver",
+                "type": "TridentNotebook",
+                "dependsOn": [
+                    {
+                        "activity": "Wait1",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "typeProperties": {
+                    "notebookId": "a9b647d5-6787-46cb-b770-98889c2363c8",
+                    "workspaceId": "8a0ad676-453e-4aae-bf78-9c1fdca19d2b",
+                    "parameters": {
+                        "years_to_process": {
+                            "value": "2015,2016,2017",
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            {
+                "name": "Silver to Gold",
+                "type": "TridentNotebook",
+                "dependsOn": [
+                    {
+                        "activity": "Wait2",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "typeProperties": {
+                    "notebookId": "1b4d4044-d033-4706-bbc6-94d2b7b4dbf4",
+                    "workspaceId": "8a0ad676-453e-4aae-bf78-9c1fdca19d2b",
+                    "parameters": {
+                        "rebuild_dimensions": {
+                            "value": true,
+                            "type": "bool"
+                        }
+                    }
+                }
+            },
+            {
+                "name": "Wait1",
+                "type": "Wait",
+                "dependsOn": [
+                    {
+                        "activity": "Ingest Bronze",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "waitTimeInSeconds": 60
+                }
+            },
+            {
+                "name": "Wait2",
+                "type": "Wait",
+                "dependsOn": [
+                    {
+                        "activity": "Bronze to Silver",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "typeProperties": {
+                    "waitTimeInSeconds": 60
+                }
+            }
+        ],
+        "lastModifiedByObjectId": "a1a66013-9a94-48b0-8b0c-cbfcf6fdbf0e",
+        "lastPublishTime": "2026-09-15T08:07:56Z"
+    }
+}
