@@ -28,7 +28,7 @@ Source files -> Bronze (raw Delta) -> Silver (clean Delta) -> Gold (star schema)
 
 ## Data
 
-[Source name and link]. About [X]M rows. Raw data isn't in this repo.
+US Department of Transportation, Bureau of Transportation Statistics (BTS) air carrier statistics (T-100), from [BTS TranStats](https://www.transtats.bts.gov/). About 5.7M rows. Raw data isn't in this repo.
 
 ## Screenshots
 
